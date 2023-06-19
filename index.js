@@ -1,16 +1,17 @@
 const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
-const port = 5000;
 const cors = require("cors");
+require("dotenv").config();
+
+port = process.env.PORT || 5000;
 
 // middleware
 app.use(express.json());
 app.use(cors());
 
 // mongodb connect
-const uri =
-  "mongodb+srv://mdmahmud484:YYDNtkY6KgpXQMJP@note-tracker.9x9smn0.mongodb.net/note-tracker?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@note-tracker.9x9smn0.mongodb.net/note-tracker?retryWrites=true&w=majority`;
 
 // Create a MongoClient
 const client = new MongoClient(uri, {
@@ -30,9 +31,11 @@ async function run() {
 
     // get all notes
     // http://localhost:5000/notes
+    // http://localhost:5000/notes?name=mahmud
 
     app.get("/notes", async (req, res) => {
-      const cursor = notesCollection.find({});
+      const query = req.query;
+      const cursor = notesCollection.find(query);
       const result = await cursor.toArray();
 
       res.send(result);
